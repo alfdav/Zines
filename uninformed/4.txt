@@ -1,0 +1,30 @@
+Engineering in Reverse
+Improving Automated Analysis of Windows x64 Binaries
+skape
+As Windows x64 becomes a more prominent platform, it will become necessary to develop techniques that improve the binary analysis process. In particular, automated techniques that can be performed prior to doing code or data flow analysis can be useful in getting a better understanding for how a binary operates. To that point, this paper gives a brief explanation of some of the changes that have been made to support Windows x64 binaries. From there, a few basic techniques are illustrated that can be used to improve the process of identifying functions, annotating their stack frames, and describing their exception handler relationships. Source code to an example IDA plugin is also included that shows how these techniques can be implemented.
+txt | code.tgz | pdf | html
+
+Exploitation Technology
+Exploiting the Otherwise Non-Exploitable on Windows
+Skywing & skape
+This paper describes a technique that can be applied in certain situations to gain arbitrary code execution through software bugs that would not otherwise be exploitable, such as NULL pointer dereferences. To facilitate this, an attacker gains control of the top-level unhandled exception filter for a process in an indirect fashion. While there has been previous work illustrating the usefulness in gaining control of the top-level unhandled exception filter, Microsoft has taken steps in XPSP2 and beyond, such as function pointer encoding, to prevent attackers from being able to overwrite and control the unhandled exception filter directly. While this security enhancement is a marked improvement, it is still possible for an attacker to gain control of the top-level unhandled exception filter by taking advantage of a design flaw in the way unhandled exception filters are chained. This approach, however, is limited by an attacker's ability to control the chaining of unhandled exception filters, such as through the loading and unloading of DLLs. This does reduce the global impact of this approach; however, there are some interesting cases where it can be immediately applied, such as with Internet Explorer.
+txt | pdf | html
+
+General Research
+Abusing Mach on Mac OS X
+nemo
+This paper discusses the security implications of Mach being integrated with the Mac OS X kernel. A few examples are used to illustrate how Mach support can be used to bypass some of the BSD security features, such as securelevel. Furthermore, examples are given that show how Mach functions can be used to supplement the limited ptrace functionality included in Mac OS X.
+txt | pdf | html
+
+Rootkit Technology
+GREPEXEC: Grepping Executive Objects from Pool Memory
+bugcheck
+As rootkits continue to evolve and become more advanced, methods that can be used to detect hidden objects must also evolve. For example, relying on system provided APIs to enumerate maintained lists is no longer enough to provide effective cross-view detection. To that point, scanning virtual memory for object signatures has been shown to provide useful, but limited, results. The following paper outlines the theory and practice behind scanning memory for hidden objects. This method relies upon the ability to safely reference the Windows system virtual address space and also depends upon building and locating effective memory signatures. Using this method as a base, suggestions are made as to what actions might be performed once objects are detected. The paper also provides a simple example of how object-independent signatures can be built and used to detect several different kernel objects on all versions of Windows NT+. Due to time constraints, the source code associated with this paper will be made publicly available in the near future.
+txt | pdf | html
+
+What Were They Thinking?
+Anti-Virus Software Gone Wrong
+Skywing
+Anti-virus software is becoming more and more prevalent on end-user computers today. Many major computer vendors (such as Dell) bundle anti-virus software and other personal security suites in the default configuration of newly-sold computer systems. As a result, it is becoming increasingly important that anti-virus software be well-designed, secure by default, and interoperable with third-party applications. Software that is installed and running by default constitutes a prime target for attack and, as such, it is especially important that said software be designed with security and interoperability in mind. In particular, this article provides examples of issues found in well-known anti-virus products. These issues range from not properly validating input from an untrusted source (especially within the context of a kernel driver) to failing to conform to API contracts when hooking or implementing an intermediary between applications and the underlying APIs upon which they rely. For popular software, or software that is installed by default, errors of this sort can become a serious problem to both system stability and security. Beyond that, it can impact the ability of independent software vendors to deploy functioning software on end-user systems.
+txt | pdf | html
+

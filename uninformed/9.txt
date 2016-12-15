@@ -1,0 +1,22 @@
+Engineering in Reverse
+An Objective Analysis of the Lockdown Protection System for Battle.net
+Skywing
+Near the end of 2006, Blizzard deployed the first major update to the version check and client software authentication system used to verify the authenticity of clients connecting to Battle.net using the binary game client protocol. This system had been in use since just after the release of the original Diablo game and the public launch of Battle.net. The new authentication module (Lockdown) introduced a variety of mechanisms designed to raise the bar with respect to spoofing a game client when logging on to Battle.net. In addition, the new authentication module also introduced run-time integrity checks of client binaries in memory. This is meant to provide simple detection of many client modifications (often labeled "hacks") that patch game code in-memory in order to modify game behavior. The Lockdown authentication module also introduced some anti-debugging techniques that are designed to make it more difficult to reverse engineer the module. In addition, several checks that are designed to make it difficult to simply load and run the Blizzard Lockdown module from the context of an unauthorized, non-Blizzard-game process. After all, if an attacker can simply load and run the Lockdown module in his or her own process, it becomes trivially easy to spoof the game client logon process, or to allow a modified game client to log on to Battle.net successfully. However, like any protection mechanism, the new Lockdown module is not without its flaws, some of which are discussed in detail in this paper.
+html | pdf | txt
+
+Exploitation Technology
+ActiveX - Active Exploitation
+warlord
+This paper provides a general introduction to the topic of understanding security vulnerabilities that affect ActiveX controls. A brief description of how ActiveX controls are exposed to Internet Explorer is given along with an analysis of three example ActiveX vulnerabilities that have been previously disclosed.
+html | pdf | txt
+
+Context-keyed Payload Encoding
+I)ruid
+A common goal of payload encoders is to evade a third-party detection mechanism which is actively observing attack traffic somewhere along the route from an attacker to their target, filtering on commonly used payload instructions. The use of a payload encoder may be easily detected and blocked as well as opening up the opportunity for the payload to be decoded for further analysis. Even so-called keyed encoders utilize easily observable, recoverable, or guessable key values in their encoding algorithm, thus making decoding on-the-fly trivial once the encoding algorithm is identified. It is feasible that an active observer may make use of the inherent functionality of the decoder stub to decode the payload of a suspected exploit in order to inspect the contents of that payload and make a control decision about the network traffic. This paper presents a new method of keying an encoder which is based entirely on contextual information that is predictable or known about the target by the attacker and constructible or recoverable by the decoder stub when executed at the target. An active observer of the attack traffic however should be unable to decode the payload due to lack of the contextual keying information.
+html | pdf | txt
+
+Improving Software Security Analysis using Exploitation Properties
+skape
+Reliable exploitation of software vulnerabilities has continued to become more difficult as formidable mitigations have been established and are now included by default with most modern operating systems. Future exploitation of software vulnerabilities will rely on either discovering ways to circumvent these mitigations or uncovering flaws that are not adequately protected. Since the majority of the mitigations that exist today lack universal bypass techniques, it has become more fruitful to take the latter approach. It is in this vein that this paper introduces the concept of exploitation properties and describes how they can be used to better understand the exploitability of a system irrespective of a particular vulnerability. Perceived exploitability is of utmost importance to both an attacker and to a defender given the presence of modern mitigations. The ANI vulnerability (MS07-017) is used to help illustrate these points by acting as a simple example of a vulnerability that may have been more easily identified as code that should have received additional scrutiny by taking exploitation properties into consideration.
+html | pdf | txt
+

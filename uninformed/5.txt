@@ -1,0 +1,29 @@
+Exploitation Technology
+Implementing a Custom X86 Encoder
+skape
+This paper describes the process of implementing a custom encoder for the x86 architecture. To help set the stage, the McAfee Subscription Manager ActiveX control vulnerability, which was discovered by eEye, will be used as an example of a vulnerability that requires the implementation of a custom encoder. In particular, this vulnerability does not permit the use of uppercase characters. To help make things more interesting, the encoder described in this paper will also avoid all characters above 0x7f. This will make the encoder both UTF-8 safe and tolower safe.
+txt | html | pdf
+
+Preventing the Exploitation of SEH Overwrites
+skape
+This paper proposes a technique that can be used to prevent the exploitation of SEH overwrites on 32-bit Windows applications without requiring any recompilation. While Microsoft has attempted to address this attack vector through changes to the exception dispatcher and through enhanced compiler support, such as with /SAFESEH and /GS, the majority of benefits they offer are limited to image files that have been compiled to make use of the compiler enhancements. This limitation means that without all image files being compiled with these enhancements, it may still be possible to leverage an SEH overwrite to gain code execution. In particular, many third-party applications are still vulnerable to SEH overwrites even on the latest versions of Windows because they have not been recompiled to incorporate these enhancements. To that point, the technique described in this paper does not rely on any compile time support and instead can be applied at runtime to existing applications without any noticeable performance degradation. This technique is also backward compatible with all versions of Windows NT+, thus making it a viable and proactive solution for legacy installations.
+txt | html | pdf
+
+Fuzzing
+Effective Bug Discovery
+vf
+Sophisticated methods are currently being developed and implemented for mitigating the risk of exploitable bugs. The process of researching and discovering vulnerabilities in modern code will require changes to accommodate the shift in vulnerability mitigations. Code coverage analysis implemented in conjunction with fuzz testing reveals faults within a binary file that would have otherwise remained undiscovered by either method alone. This paper suggests a research method for more effective runtime binary analysis using the aforementioned strategy. This study presents empirical evidence that despite the fact that bug detection will become increasingly difficult in the future, analysis techniques have an opportunity to evolve intelligently.
+code.tgz | txt | html | pdf
+
+General Research
+Wars Within
+Orlando Padilla
+In this paper I will uncover the information exchange of what may be classified as one of the highest money making schemes coordinated by 'organized crime'. I will elaborate on information gathered from a third party individual directly involved in all aspects of the scheme at play. I will provide a detailed explanation of this market's origin, followed by a brief description of some of the actions strategically performed by these individuals in order to ensure their success. Finally, I will elaborate on real world examples of how a single person can be labeled a spammer, malware author, cracker, and an entrepreneur gone thief. For the purposes of avoiding any legal matters, and unwanted media, I will refrain from mentioning the names of any individuals and corporations who are involved in the schemes described in this paper.
+txt | html | pdf
+
+Wireless Technology
+Fingerprinting 802.11 Implementations via Statistical Analysis of the Duration Field
+Johnny Cache
+The research presented in this paper provides the reader with a set of algorithms and techniques that enable the user to remotely determine what chipset and device driver an 802.11 device is using. The technique outlined is entirely passive, and given the amount of features that are being considered for inclusion into the 802.11 standard, seems quite likely that it will increase in precision as the standard marches forward. The implications of this are far ranging. On one hand, the techniques can be used to implement innovative new features in Wireless Intrusion Detection Systems (WIDS). On the other, they can be used to target link layer device driver attacks with much higher precision.
+code.ref | html | pdf
+

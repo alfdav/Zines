@@ -1,0 +1,25 @@
+    
+
+Engineering in Reverse
+Inside Blizzard: Battle.net
+Skywing
+This paper intends to describe a variety of the problems Blizzard Entertainment has encountered from a practical standpoint through their implementation of the large-scale online game matchmaking and chat service, Battle.net. The paper provides some background historical information into the design and purpose of Battle.net and continues on to discuss a variety of flaws that have been observed in the implementation of the system. Readers should come away with a better understanding of problems that can be easily introduced in designing a matchmaking/chat system to operate on such a large scale in addition to some of the serious security-related consequences of not performing proper parameter validation of untrusted clients.
+html | pdf | txt
+
+Exploitation Technology
+Temporal Return Addresses
+skape
+Nearly all existing exploitation vectors depend on some knowledge of a process' address space prior to an attack in order to gain meaningful control of execution flow. In cases where this is necessary, exploit authors generally make use of static addresses that may or may not be portable between various operating system and application revisions. This fact can make exploits unreliable depending on how well researched the static addresses were at the time that the exploit was implemented. In some cases, though, it may be possible to predict and make use of certain addresses in memory that do not have static contents. This document introduces the concept of temporal addresses and describes how they can be used, under certain circumstances, to make exploitation more reliable.
+html | pdf | txt | code.tgz
+
+Bypassing Windows Hardware-enforced DEP
+skape & Skywing
+This paper describes a technique that can be used to bypass Windows hardware-enforced Data Execution Prevention (DEP) on default installations of Windows XP Service Pack 2 and Windows 2003 Server Service Pack 1. This technique makes it possible to execute code from regions that are typically non-executable when hardware support is present, such as thread stacks and process heaps. While other techniques have been used to accomplish similar feats, such as returning into NtProtectVirtualMemory, this approach requires no direct reprotecting of memory regions, no copying of arbitrary code to other locations, and does not have issues with NULL bytes. The result is a feasible approach that can be used to easily bypass the enhancements offered by hardware-enforced DEP on Windows in a way that requires very minimal modifications to existing exploits.
+html | pdf | txt
+
+General Research
+802.11 VLANs and Association Redirection
+Johnny Cache
+The goal of this paper is to introduce the reader to a technique that could be used to implement something analogous to VLANs found in wired media into a typical IEEE 802.11 environment. What makes this technique interesting is that it can be accomplished without breaking the IEEE 802.11 standard on the client side, and requires only minor changes made to the Access Point (AP). No modifications are made to the 802.11 MAC. It is the author's hope that after reading the paper the reader will not only understand the specific technique outlined below, but will consider protocol specifications with a new perspective in the future.
+html | pdf | txt
+

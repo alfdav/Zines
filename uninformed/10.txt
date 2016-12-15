@@ -1,0 +1,24 @@
+    
+
+Engineering in Reverse
+Can you find me now? Unlocking the Verizon Wireless xv6800 (HTC Titan) GPS
+Skywing
+In August 2008 Verizon Wireless released a firmware upgrade for their xv6800 (rebranded HTC Titan) line of Windows Mobile smartphones that provided a number of new features previously unavailable on the device on the initial release firmware. In particular, support for accessing the device's built-in Qualcomm gpsOne assisted GPS chipset was introduced with this update. However, Verizon Wireless elected to attempt to lock down the GPS hardware on xv6800 such that only applications authorized by Verizon Wireless would be able to access the device's built-in GPS hardware and perform location-based functions (such as GPS-assisted navigation). The mechanism used to lock down the GPS hardware is entirely client-side based, however, and as such suffers from fundamental limitations in terms of how effective the lockdown can be in the face of an almost fully user-programmable Windows Mobile-based device. This article outlines the basic philosophy used to prevent unauthorized applications from accessing the GPS hardware and provides a discussion of several of the flaws inherent in the chosen design of the protection mechanism. In addition, several pitfalls relating to debugging and reverse engineering programs on Windows Mobile are also discussed. Finally, several suggested design alterations that would have mitigated some of the flaws in the current GPS lock down system from the perspective of safeguarding the privacy of user location data are also presented.
+pdf | html | txt
+
+Using dual-mappings to evade automated unpackers
+skape
+Automated unpackers such as Renovo, Saffron, and Pandora's Bochs attempt to dynamically unpack executables by detecting the execution of code from regions of virtual memory that have been written to. While this is an elegant method of detecting dynamic code execution, it is possible to evade these unpackers by dual-mapping physical pages to two distinct virtual address regions where one region is used as an editable mapping and the second region is used as an executable mapping. In this way, the editable mapping is written to during the unpacking process and the executable mapping is used to execute the unpacked code dynamically. This effectively evades automated unpackers which rely on detecting the execution of code from virtual addresses that have been written to.
+pdf | html | txt
+
+Exploitation Technology
+Analyzing local privilege escalations in win32k
+mxatone
+This paper analyzes three vulnerabilities that were found in win32k.sys that allow kernel-mode code execution. The win32k.sys driver is a major component of the GUI subsystem in the Windows operating system. These vulnerabilities have been reported by the author and patched in MS08-025. The first vulnerability is a kernel pool overflow with an old communication mechanism called the Dynamic Data Exchange (DDE) protocol. The second vulnerability involves improper use of the ProbeForWrite function within string management functions. The third vulnerability concerns how win32k handles system menu functions. Their discovery and exploitation are covered.
+pdf | html | txt
+
+Exploiting Tomorrow's Internet Today: Penetration testing with IPv6
+H D Moore
+This paper illustrates how IPv6-enabled systems with link-local and auto-configured addresses can be compromised using existing security tools. While most of the techniques described can apply to "real" IPv6 networks, the focus of this paper is to target IPv6-enabled systems on the local network.
+pdf | html | txt
+

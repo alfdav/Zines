@@ -1,0 +1,19 @@
+    
+
+Exploitation Technology
+Reducing the Effective Entropy of GS Cookies
+skape
+This paper describes a technique that can be used to reduce the effective entropy in a given GS cookie by roughly 15 bits. This reduction is made possible because GS uses a number of weak entropy sources that can, with varying degrees of accuracy, be calculated by an attacker. It is important to note, however, that the ability to calculate the values of these sources for an arbitrary cookie currently relies on an attacker having local access to the machine, such as through the local console or through terminal services. This effectively limits the use of this technique to stack-based local privilege escalation vulnerabilities. In addition to the general entropy reduction technique, this paper discusses the amount of effective entropy that exists in services that automatically start during system boot. It is hypothesized that these services may have more predictable states of entropy due to the relative consistency of the boot process. While the techniques described in this paper do not illustrate a complete break of GS, any inherent weakness can have disastrous consequences given that GS is a static, compile-time security solution. It is not possible to simply distribute a patch. Instead, applications must be recompiled to take advantage of any security improvements. In that vein, the paper proposes some solutions that could be applied to address the problems that are outlined.
+pdf | code.tgz | html | txt
+
+General Research
+Memalyze: Dynamic Analysis of Memory Access Behavior in Software
+skape
+This paper describes strategies for dynamically analyzing an application's memory access behavior. These strategies make it possible to detect when a read or write is about to occur at a given location in memory while an application is executing. An application's memory access behavior can provide additional insight into its behavior. For example, it may be able to provide an idea of how data propagates throughout the address space. Three individual strategies which can be used to intercept memory accesses are described in this paper. Each strategy makes use of a unique method of intercepting memory accesses. These methods include the use of Dynamic Binary Instrumentation (DBI), x86 hardware paging features, and x86 segmentation features. A detailed description of the design and implementation of these strategies for 32-bit versions of Windows is given. Potential uses for these analysis techniques are described in detail.
+pdf | code.tgz | html | txt
+
+Mnemonic Password Formulas
+I)ruid
+The current information technology landscape is cluttered with a large number of information systems that each have their own individual authentication schemes. Even with single sign-on and multi-system authentication methods, systems within disparate management domains are likely to be utilized by users of various levels of involvement within the landscape as a whole. Due to this complexity and the abundance of authentication requirements, many users are required to manage numerous credentials across various systems. This has given rise to many different insecurities relating to the selection and management of passwords. This paper details a subset of issues facing users and managers of authentication systems involving passwords, discusses current approaches to mitigating those issues, and finally introduces a new method for password management and recalls termed Mnemonic Password Formulas.
+pdf | html | txt
+

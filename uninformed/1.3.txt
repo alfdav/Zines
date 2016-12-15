@@ -1,0 +1,752 @@
+
+                          ==Uninformed Research==
+
+|=-----------------------=[ Smart Parking Meters ]=---------------------=|
+|=----------------------------------------------------------------------=|
+|=------------------=[ h1kari <h1kari@dachb0den.com> ]=-----------------=|
+
+--=[ Contents ]=----------------------------------------------------------
+
+	1 - Introduction 
+        2 - ISO7816
+	3 - Synchronous Cards
+                3.1 - Memory Cards
+                3.2 - Parking Meter Debit Cards
+                3.3 - The Simple Hack
+        4 - Memory Dump
+	5 - Synchronous Smart Card Protocol Sniffing
+                5.1 - Sniffer Design
+                5.2 - Sniffer Code
+        6 - Protocol Analysis
+                6.1 - Decoding Data
+                6.2 - Timing Graph
+                6.3 - Conclusions
+        7 - Conclusion
+
+
+--[ 1 - Introduction ]----------------------------------------------------
+
+    If this whitepaper looks a little familiar to you, I'm going to admit
+off the bat that it's based a bit on Phrack 48-10/11 (Electronic Telephone
+Cards: How to make your own!) and is using a similar format to Phrack
+62-15 (Introduction for Playing Cards for Smart Profits). I highly
+recommend you read both of them if you're trying to learn about smart
+cards.
+
+    I'm sure that many of you that live near a major city have seen
+parking meters that require you to pay money in order to park in a spot.
+Upon initial analysis of these devices you'll notice there is a slot for
+money to go in. On some, there is also a slot for a Parking Meter Debit
+Card that you can purchase from the city. This article will analyze these
+Parking Meters and their Debit Cards, show how they tick, and show how you
+can defeat their security.
+
+    The end goal however is to provide enough information so you can
+create your own tools to learn more about smart cards and how they work.
+I have no intention of having people use this article to rip off the
+government, this is for educational purposes only. My only hope is that by
+getting this information out there, security systems will be designed more
+thoroughly in the future.
+
+                              PARKING METER
+
+                                _,-----,_
+                             ,-'         `-,
+                            /  ._________.  \
+                           / , |  00:00 <+-,-+------ Time/Credits Display
+         Meter Status ----+>'-''---------''-'<+----- Meter Status
+                          |   ,-------,       |
+                          |   |\    |<+-------+----- Coin Slot
+      Smart Card Slot -----\--+->\  | |      /
+                            \ '----\--'     /
+                            \               /
+                             \             /
+                             \             /
+                              \-----------/
+                              | ,-------, |
+                Money --------+-+-->o   | |
+                              | |       | |
+                              | |       | |
+                              | '-------' |
+                               \---------/
+                                 |     | 
+
+    
+    For those not familiar with these devices, you can go to various
+locations around town and purchase these Parking Meter Debit Cards that
+are preloaded with $10, $20, or $50. To explain how to use these, I will
+quote off of the instructions provided on the back of the cards:
+
+  .--------------------------------------------------------------------.
+ /                                                                      \
+ |                       PARKING METER DEBIT CARD                       |
+ |                                                                      |
+ |     1. Insert debit card into meter in direction shown by arrow.     |
+ |        The dollar balance of the card will flash 4 times.            |
+ |     2. The Meter will increment in 6 min. segments.                  |
+ |     3. When desired time is displayed, remove card.                  |
+ |                                                                      |
+ |                      DID YOU BUY TOO MUCH TIME?                      |
+ |                      TO OBTAIN EXTRA TIME REFUND                     |
+ |                                                                      |
+ |     * Insert the same debit card that was used to purchase time      |
+ |       on the meter. Full 6 minute increments will be credited to     |
+ |       card. Increments of less than 6 minutes will be lost.          |
+ |                                                                      |
+ |        Parking cards may be used for ************** meters           |
+ |                      which have yellow posts.                        |
+ |                                                                      |
+  \--------------------------------------------------------------------/
+
+         NOTE: The increments are now 4 min due to raising prices
+
+    I'm not including a lot of information that's provided in those
+Phrack's that were mentioned, so if things look a little incomplete,
+please read through them before emailing me with questions.
+
+Here's a list of all of my resources: 
+
+    - The ISO7816 Standard
+
+    - Phrack 48-10/11 & 62-15
+
+    - Towitoko ChipDrive 130
+
+    - Homebrew Synchronous Protocol Sniffer (Schematics Included)
+
+    - A few Parking Meter Debit Cards
+
+    - A few Parking Meters
+
+    - Computer with a Parallel Port
+
+    - A business card or two
+
+
+--[ 2 - ISO7816 ]---------------------------------------------------------
+
+    The ISO 7816 standard is one of the few resources we have to work with
+when reverse engineering a smart card. It provides us with basic knowledge
+of pin layouts, what the different pins do, and how to interface with
+them. Unfortunately, it mostly covers asynchronous cards and doesn't
+really touch on how synchronous cards work. To get more detailed
+information on this please read Phrack 48-10/11.
+
+
+--[ 3 - Synchronous Cards ]-----------------------------------------------
+
+    Synchronous protocols are usually used with memory cards mainly to
+reduce cost (since the card doesn't require an internal clock) and because
+usually memory cards don't require much logic and are used for simple
+applications. Asynchronous cards on the other hand have an internal clock
+and can communicate with the reader at a fixed rate across the I/O line
+(usually 9600 baud), asynchronous cards are usually used with processor
+cards where more interaction is required (see Phrack 62-15).
+
+
+----[ 3.1 - Memory Cards ]------------------------------------------------
+
+    Memory cards use a very simple protocol for sending data. First off,
+because synchronous cards don't know anything about timing, their clock is
+provided by the reader. In this situation, the reader can set the I/O line
+when the clock is low (0v) and the card can set the I/O line when the
+clock is high (5v). To dump all of the memory from a card, the reader
+first sets the Reset line high to reset the card and keeps the clock
+ticking. The first time the Reset line is low and the Clock is raised the
+card will set the I/O line to whatever the 0 bit is in memory, the second
+time it's raised, the card will set the I/O line to whatever the 1 bit is
+in memory, etc. This is repeated until all of the data is dumped from the
+card.
+
+  __________________
+_|                  |___________________________________________ Reset
+ :                  :
+ :        _____     :  _____       _____       _____       _____
+_:_______|     |____:_|     |_____|     |_____|     |_____|      Clk
+ :       :          : :     :     :     :     :     :     :     
+_:_______:__________:_:_____:_____:_____:_____:_____:_____:_____
+_:___n___|_____0____:_|_____1_____|_____2_____|_____3_____|___4_ (Address)
+ :                  :       :           :           :           
+_:                  :_______:___________:___________:___________
+_XXXXXXXXXXXXXXXXXXXX_______|___________|___________|___________ Data
+Bit n                  Bit 0    Bit 1        Bit2       Bit3
+
+(Borrowed from Stephane Bausson's paper re-published in Phrack 48-10)
+
+
+----[ 3.1 - Parking Meter Debit Cards ]-----------------------------------
+
+    Parking Meter Debit Cards behave very similarly to standard memory
+cards, however they also have to provide some basic security to make sure
+people can't get free parking. This is done by using a method similar to
+the European Telephone Cards (SLE4406) where there is a section of memory
+on the card that acts as a one-way counter where bits are set to a certain
+amount of credits, then a security fuse is blown, and now the set bits can
+only be flipped from 1 -> 0. This is a standard security mechanism that
+makes it so people cannot recharge their cards once the credits have been
+used. The only catch is that the way that the parking meters work makes it
+so you can refund unused credits to the card.
+
+
+----[ 3.2 - Parking Meter Debit Cards ]-----------------------------------
+
+    If my little introduction to Synchronous Smart Cards just went right
+over your head, here's an example of how to attack Parking Meters without
+having to deal with electronics or code. If you ever try putting an
+invalid card into a parking meter, you'll notice that after about 90
+seconds of flashing error messages, it will switch over to Out-of-Order
+status. Now, for convenience sake, most cities allow you to park for free
+in Out-of-Order spots. (Anyone see a loophole here???)
+
+ .----------------------------------------------------------------------.
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :  <- insert folded side           |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ |                                   :                                  |
+ '----------------------------------------------------------------------'
+
+    One simple method you can use for making it less obvious that
+something in the slot is making it be Out-of-Order is to fold a business
+card in half (preferably not yours) and insert it into the smart card
+slot. It should be the perfect length that it will go in and be very
+difficult to notice and/or take out. When you're finished parking, you
+should be able to pull the business card out using a credit card or small
+flathead screwdriver.
+
+
+--[ 4 - Memory Dump ]-----------------------------------------------------
+
+    To explain how the cards handle credits and refunds, I'll first show
+you how the memory on the card is laid out. This dump was done using my
+Towitoko ChipDrive 130 using Towitoko's SmartCard Editor Software (very
+useful). I highly suggest that you use a commercial smart card reader or
+some sort of non-dumb reader for dealing with synchronous cards, dumb
+mouse (and most home-brew) readers only work with asynchronous cards.
+
+             0x00:  9814 ff3c 9200 46b1 ffff ffff ffff ffff
+             0x10:  ffff ffff ffff ff00 0000 0000 0000 0000
+             0x20:  0000 0000 0000 0000 0000 0000 0000 0000
+             0x30:  0000 0000 0000 0000 0000 0000 0000 0000
+             0x40:  0000 0000 0000 0000 0000 0000 0000 0000
+             0x50:  0000 0000 f8ff ffff ffff ffff fffc ffff
+             0x60:  ffff ffff ffff ffff ffff ffff ffff ffff
+             0x70:  ffff ffff ffff ffff ffff ffff ffff ffff
+             0x80:  ffff ffff ffff ffff ffff ffff ffff ffff
+             0x90:  ffff ffff ffff ffff ffff ffff ffff ffff
+             0xa0:  fcff ffff ffff ffff ffff ffff ffff ffff
+             0xb0:  ffff ffff ffff ffff ffff ffff ffff ffff
+             0xc0:  ffff ffff
+
+    Now.. if we convert over the 0x50 line to bits and analyze it, we'll
+notice this (note that bit-endianness is reversed):
+
+             0x50: 0000 0000 0000 0000 0000 0000 0000 0000
+             0x54: 0001 1111 1111 1111 1111 1111 1111 1111
+             0x58: 1111 1111 1111 1111 1111 1111 1111 1111
+             0x5a: 1111 1111 0011 1111 1111 1111 1111 1111
+
+    For every bit that is 1 between 0x17 and 0x55:1 (note: :x notation
+specifies bit offset), you get $0.10 on your card. For every bit that is 0
+between 0x5b and 0xb0 you get $0.10 in refunds. The total of these two
+counters equals the amount of credits on your card. Now, how they handle
+people using the refunds is by having the buffer of bits inbetween 0x55:1
+and 0x5b that can be used if there are refund bits that can be spent. This
+only allows the user to use ~ $5 worth of refund bits. On this particular
+card, the user has $0.60 worth of credits and $0.20 worth of refunds
+making a total of $0.80 on the card (I know, I'm poor :-/).
+
+
+--[ 5 - Synchronous Smart Card Protocol Sniffing ]------------------------
+
+    Now that we've figured out how they store credits on the card, we need
+to figure out how the reader writes to the card. To do this, we'll need
+to somehow sniff the connection and reverse engineer their protocol. The
+following section will show you how to make your own synchronous smart
+card protocol sniffer and give you code for sniffing the connection.
+
+
+----[ 5.1 - Sniffer Design ]----------------------------------------------
+
+    There's plenty of commercial hardware out there (Season) that allow
+you to sniff asynchronous smart cards, but it's a totally different story
+for synchronous cards. I wasn't able to find any hardware to do this (and
+being totally dumb when it comes to electronics) found someone to help me
+out with this design (thx XElf). It basically taps the lines between a
+smart card and the reader and runs the signals through an externally
+powered buffer to make sure our parallel port doesn't drain the
+connection.
+
+    My personal implementation consists of a smart card socket I ripped
+out of an old smart card reader, a peet's coffee card that I made ISO7816
+pinouts on using copper tape, all connected by torn apart floppy drive
+cables, and powered by a ripped apart usb cable. You should be able to
+find some pics on the net if you search around, although I guarantee
+whatever you come up with will be less ghetto than me.
+
+
+    Parallel Port 
+
+D10 - Ack       - I6 o-------------------------,
+                                               |
+D11 - Busy      - I7 o-----------------------------,
+                                               |   |
+D12 - Paper Out - I5 o---------------------------------,
+                                               |   |   |
+D13 - Select    - I4 o-------------------------------------,
+                                               |   |   |   |
+D25 - Gnd            o-----,                   |   |   |   |
+                           |                   |   |   |   |
+                           |                   |   |   |   |
+    External 5V (USB)      |                   |   |   |   |
+                           |                   |   |   |   |
+5V  o------------------,   |                   |   |   |   |
+                       |   |                   |   |   |   |
+0V  o-------*----*-----|---*-------------------|---|---|---|-----,
+            |    |     |   |                   |   |   |   |     |
+            |    |  ,--==--==--==--==--==--==--==--==--==--==--, |
+          __+__  |  |_ 20  19  18  17  16  15  14  13  12  11  | |
+          /////  |  | ]               74HCT541N                | |
+                 |  |'  1   2   3   4   5   6   7   8   9  10  | |
+                 |  '--==--==--==--==--==--==--==--==--==--==--' |
+                 |     |   |   |   |   |   |   |   |   |   |     |
+                 |     |   '---*---*---*   |   |   |   |   '-----'
+                 '-----*---------, ,---|---*   |   |   |
+                                 | | ,-|---|---*   |   |
+          Smart Card             | | | |   |   |   *---|------,
+         ,----------,----------, | | | |   |   |   |   *----, |
+ ,-------|--*   Vcc | Gnd   *--|-* | | |  ,-, ,-, ,-, ,-,   | | 
+ |       |----------|----------| | | | |  | | | | | | | |   | |
+ | ,-----|--* Reset | Vpp      | | | | |  | | | | | | | |   | |
+ | |     |----------|----------| | | | |  |_| |_| |_| |_|   | |
+ | | ,---|--* Clock | I/O   *--|---|-* |   |r1 |r2 |r3 |r4  | |
+ | | |   |----------|----------| | | | |   |10k|10k|10k|10k | |
+ | | | ,-|--*   RF1 | RF2   *--|---* | |   |   |   |   |    | |
+ | | | | '----------'----------' | | | '---*---*---*---'    | |   
+ | | *-|-------------------------|-|-|----------------------' |
+ | *-|-|-------------------------|-|-|------------------------'
+ | | | |                         | | |
+ | | | |  Smart Card Reader      | | |
+ | | | | ,----------,----------, | | |
+ '-------|--*   Vcc | Gnd   *--|-' | |
+   | | | |----------|----------|   | |
+   '-----|--* Reset | Vpp      |   | |
+     | | |----------|----------|   | |
+     '---|--* Clock | I/O   *--|---' |
+       | |----------|----------|     |
+       '-|--*   RF1 | RF2   *--|-----'
+         '----------'----------'
+
+
+----[ 5.2 - Sniffer Code ]------------------------------------------------
+
+    To monitor the connection, compile and run this code with a log
+filename as an argument. This code is written for openbsd and uses it's
+i386_iopl() function to get access to writing to the ports. You may need
+to modify it to work on other OSs. Due to file i/o speed limitations, it
+will log to the file whenever you hit ctrl+c.
+
+
+/*
+ * Synchronous Smart Card Logger v1.0 [synclog.c]
+ * by h1kari <h1kari@dachb0den.com>
+ */
+#include <stdio.h>
+#include <signal.h>
+#include <sys/types.h>
+#include <machine/sysarch.h>
+#include <i386/pio.h>
+
+#define BASE	0x378
+#define DATA	(BASE)
+#define STATUS	(BASE + 1)
+#define CONTROL	(BASE + 2)
+#define ECR	(BASE + 0x402)
+#define BUF_MAX	(1024 * 1024 * 8) /* max log size 8mb */
+
+int bufi = 0;
+u_char buf[BUF_MAX];
+char *logfile;
+
+void
+die(int signo)
+{
+	int i, b;
+	FILE *fh;
+
+	/* open logfile and write output */
+	if((fh = fopen(logfile, "w")) == NULL) {
+		perror("unable to open lpt log file");
+		exit(1);
+	}
+	for(i = 0; i < bufi; i++)
+		printbits(fh, buf[i]);
+
+	/* flush and exit out */
+	fflush(fh);
+	fclose(fh);
+	_exit(0);
+}
+
+int
+printbits(FILE *fh, int b)
+{
+	fprintf(fh, "%d%d%d%d\n",
+	    (b >> 7) & 1, (b >> 6) & 1,
+	    (b >> 5) & 1, (b >> 4) & 1);
+}
+
+int
+main(int argc, char *argv[])
+{
+	unsigned char a, b, c;
+	unsigned int *ptraddr;
+	unsigned int address;
+
+	if(argc < 2) {
+		fprintf(stderr, "usage: %s <file>\n", argv[0]);
+		exit(1);
+	}
+
+	logfile = argv[1];
+
+	/* enable port writing privileges */
+	if(i386_iopl(3)) {
+		printf("You need to be superuser to use this\n");
+		exit(1);
+	}
+
+	/* clear status flags */
+	outb(STATUS, inb(STATUS) & 0x0f);
+
+	/* set epp mode, just in case */
+	outb(ECR, (inb(ECR) & 0x1f) | 0x80);
+
+	/* log to file when we get ctrl+c */
+	signal(SIGINT, die);
+
+	/* fetch dataz0r */
+	c = 0;
+	while(bufi < BUF_MAX) {
+		/* select low nibble */
+		outb(CONTROL, (inb(CONTROL) & 0xf0) | 0x04);
+
+		/* read low nibble */
+		if((b = inb(STATUS)) == c)
+			continue;
+
+		buf[bufi++] = c = b; /* save last state bits */
+	}
+
+	printf("buffer overflow!\n");
+	die(0);
+}
+
+
+    It might also help to drop the priority level when running it, if it
+looks like you're having timing issues:
+
+# nice -n -20 ./synclog file.log
+
+
+--[ 6 - Protocol Analysis ]-----------------------------------------------
+
+    Once we get our log of the connection, we'll need to run it through
+some tools to analyze and decode the protocol. I've put together a couple
+of simple tools that'll make your life a lot easier. One will simply
+decode the bytes that are transferred across based on the state changes.
+The other will graph out the whole conversation 2-dimensionally so you
+can graphically view patterns in the connection.
+
+
+----[ 6.1 - Decoding Data ]-----------------------------------------------
+
+    For decoding the data, we simply record bits to an input buffer when
+the clock is in one state, and to an output buffer when the clock is in
+the other. Then dump all of the bytes and reset our counter whenever
+there's a reset. This should give us a dump of the data that's being
+transferred between the two devices.
+
+
+/*
+ * Synchronous Smart Card Log Analyzer v1.0 [analyze.c]
+ * by h1kari <h1kari@dachb0den.com>
+ */
+#include <stdio.h>
+
+#ifdef PRINTBITS
+#define BYTESPERROW	8
+#else
+#define BYTESPERROW	16
+#endif
+
+void
+pushbit(u_char *byte, u_char bit, u_char n)
+{
+	/* add specified bit to their byte */
+	*byte &= ~(1 << (7 - n));
+	*byte |= (bit << (7 - n));
+}
+
+void
+printbuf(u_char *buf, int len, char *io)
+{
+	int i, b;
+
+	printf("%s:\n", io);
+
+	for(i = 0; i < len; i++) {
+#ifdef PRINTBITS
+		int j;
+
+		for(j = 7; j >= 0; j--)
+			printf("%d", (buf[i] >> j) & 1);
+		putchar(' ');
+#else
+		printf("%02x ", buf[i]);
+#endif
+		if((i % BYTESPERROW) == BYTESPERROW - 1)
+			printf("\n");
+	}
+
+	if((i % BYTESPERROW) != 0) {
+		printf("\n");
+	}
+}
+
+int
+main(int argc, char *argv[])
+{
+	u_char ibit, obit;
+	u_char ibyte, obyte;
+	u_char clk, rst, bit;
+	u_char lclk;
+	u_char ibuf[1024 * 1024], obuf[1024 * 1024];
+	int ii = 0, oi = 0;
+	char line[1024];
+	FILE *fh;
+
+	if(argc < 2) {
+		fprintf(stderr, "usage: %s <file>\n", argv[0]);
+		exit(1);
+	}
+
+	if((fh = fopen(argv[1], "r")) == NULL) {
+		perror("unable to open lpt log\n");
+		exit(1);
+	}
+
+	lclk = 2;
+	while(fgets(line, 1024, fh) != NULL) {
+		bit = line[0] - 48;
+		rst = line[2] - 48;
+		clk = line[3] - 48;
+		bit = bit ? 0 : 1;
+
+		if(lclk == 2) lclk = clk;
+
+		/* print out buffers when we get a reset */
+		if(rst) {
+			if(ii > 0 && oi > 0) {
+				printbuf(ibuf, ii, "input");
+				printbuf(obuf, oi, "output");
+			}
+			ibit = obit = 0;
+			ibyte = obyte = 0;
+			ii = oi = 0;
+		}
+
+		/* if clock high input */
+		if(clk) {
+			/* incr on clock change */
+			if(lclk != clk) obit++;
+			pushbit(&ibyte, bit, ibit);
+		/* otherwise output */
+		} else {
+			/* incr on clock change */
+			if(lclk != clk) ibit++;
+			pushbit(&obyte, bit, obit);
+		}
+
+		/* next byte */
+		if(ibit == 8) {
+			ibuf[ii++] = ibyte;
+			ibit = 0;
+		}
+
+		if(obit == 8) {
+			obuf[oi++] = obyte;
+			obit = 0;
+		}
+
+		/* save last clock */
+		lclk = clk;
+	}
+}
+
+
+----[ 6.2 - Timing Graph ]------------------------------------------------
+
+    Sometimes it really helps to see data graphically instead of just a
+bunch of hex and 1's and 0's, so my friend pr0le threw together this perl
+script that creates an image with a time diagram of the lines. By
+analyzing this it made it easier to see how they were performing reads
+and writes to the card. 
+
+
+
+#!/usr/bin/perl
+use GD;
+
+my $logfile = shift || die "usage: $0 <logfile>\n";
+
+open( F, "<$logfile" );
+my @lines = <F>;
+close( F );
+
+my $len = 3;
+
+my $im_len = scalar( @lines );
+my $w = $im_len * $len;
+my $h = 100;
+
+my $im = new GD::Image( $w, $h );
+my $white = $im->colorAllocate( 255, 255, 255 );
+my $black = $im->colorAllocate(   0,   0,   0 );
+
+$im->fill( 0, 0, $white );
+
+my $i   = 1;
+my $init = 0;
+my ($bit1,$bit2,$rst,$clk);
+my ($lbit1,$lbit2,$lrst,$lclk) = (undef,undef,undef,undef);
+my ($x1, $y1, $x2, $y2);
+foreach my $line ( @lines ) {
+   ($bit1,$bit2,$rst,$clk) = ($line =~ m/^(\d)(\d)(\d)(\d)/);
+   if( $init ) {
+      &print_bit( $lbit1, $bit1, 10 );
+      &print_bit( $lbit2, $bit2, 30 );
+      &print_bit( $lrst,  $rst, 50 );
+      &print_bit( $lclk,  $clk, 70 );
+   }
+   ($lbit1,$lbit2,$lrst,$lclk) = ($bit1,$bit2,$rst,$clk);
+   $init = 1;
+   $i++;
+}
+
+open( F, ">$logfile.jpg" );
+binmode F;
+print F $im->jpeg;
+close( F );
+
+exit;
+
+sub print_bit {
+   my ($old, $new, $ybase) = @_;
+
+   if( $new != $old ) {
+      if( $new ) {
+         $im->line( $i*$len, $ybase+10, $i*$len, $ybase+20, $black );
+         $im->line( $i*$len, $ybase+20, $i*$len+$len, $ybase+20, $black );
+      } else {
+         $im->line( $i*$len, $ybase+20, $i*$len, $ybase+10, $black );
+         $im->line( $i*$len, $ybase+10, $i*$len+$len, $ybase+10, $black );
+      }
+   } else {
+      if( $new ) {
+         $im->line( $i*$len, $ybase+20, $i*$len+$len, $ybase+20, $black );
+      } else {
+         $im->line( $i*$len, $ybase+10, $i*$len+$len, $ybase+10, $black );
+      }
+   }
+
+   return;
+}
+
+
+----[ 6.3 - Conclusions ]-------------------------------------------------
+
+    This code showed how the reserved lines on the smart card are used in
+conjunction with credit increments and decrements. This is an analysis of
+how it triggers a credit deduct or add on the card:
+
+
+    DEDUCT $0.10:
+
+          ___________             ___________
+_________|           |___________|           |__________________ Reset
+                      ____________________________________ 
+_____________________|                                    |_____ Clk
+          ___________
+_________|           |__________________________________________ I/O
+          ___________
+_________|           |__________________________________________ Rsv1
+
+    Then issue write command:
+00011001 00101000 11111111 00111100
+01001001 00000000 01100010 10001101
+11111111 11111111 01110111 10101101
+
+
+    ADD $0.20:
+
+          ___________             ___________              _____
+_________|           |___________|           |____________|      Reset
+                      ____________________________________ 
+_____________________|                                    |_____ Clk
+_____________________________________________
+                                             |__________________ I/O
+          ___________________________________
+_________|                                   |__________________ Rsv1
+
+    Then issue write command:
+00011001 00101000 11111111 00111100
+01001001 00000000 01100010 10001101
+11111111 11111111 01110111 10101101
+                                                           _____
+__________________________________________________________|      Reset
+ ________             ___________             ____________
+|        |___________|           |___________|            |_____ Clk
+ ____________________             ________________________
+|                    |___________|                        |_____ I/O
+ ____________________             ________________________
+|     1 Credit       |___________|        2 Credits       |_____ Rsv1
+
+
+    Since the parking meter will refund whatever remaining amount there is
+to the card and doesn't have to do it one at a time like with decrements,
+the write command supports writing multiple credits back onto the card.
+Simply repeat the waveform above and assert Reset when you're finished
+"refunding" however many credits you want.
+
+
+--[ 7 - Conclusion ]------------------------------------------------------
+
+    By now, you're probably thinking that this article sucks because there
+isn't any ./code that will just give you more $. Unfortunately, most
+security smart card protocols are fairly proprietary and whatever code I
+released probably wouldn't work in your particular city. And all of the
+data and waveforms I've included in this article probably gives the city
+it does correspond to, enough info to start camping white vans on my
+front lawn. ;-o
+
+    Instead of lame vendor specific code, we're aiming to give you
+something much more powerful in the next part to this article which will
+allow you to emulate arbitrary smart cards and simple electronic
+protocols (thx spidey). So stay tuned for the next uninformed article
+from Dachb0den Labs.
+
+-h1kari 0ut

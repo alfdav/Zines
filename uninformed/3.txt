@@ -1,0 +1,35 @@
+Engineering in Reverse
+Bypassing PatchGuard on Windows x64
+skape & Skywing
+The version of the Windows kernel that runs on the x64 platform has introduced a new feature, nicknamed PatchGuard, that is intended to prevent both malicious software and third-party vendors from modifying certain critical operating system structures. These structures include things like specific system images, the SSDT, the IDT, the GDT, and certain critical processor MSRs. This feature is intended to ensure kernel stability by preventing uncondoned behavior, such as hooking. However, it also has the side effect of preventing legitimate products from working properly. For that reason, this paper will serve as an in-depth analysis of PatchGuard's inner workings with an eye toward techniques that can be used to bypass it. Possible solutions will also be proposed for the bypass techniques that are suggested.
+pdf | txt | html
+
+Exploitation Technology
+Windows Kernel-mode Payload Fundamentals
+bugcheck & skape
+This paper discusses the theoretical and practical implementations of kernel-mode payloads on Windows. At the time of this writing, kernel-mode research is generally regarded as the realm of a few, but it is hoped that documents such as this one will encourage a thoughtful progression of the subject matter. To that point, this paper will describe some of the general techniques and algorithms that may be useful when implementing kernel-mode payloads. Furthermore, the anatomy of a kernel-mode payload will be broken down into four distinct units, known as payload components, and explained in detail. In the end, the reader should walk away with a concrete understanding of the way in which kernel-mode payloads operate on Windows.
+pdf | txt | html
+
+Fuzzing
+Analyzing Common Binary Parser Mistakes
+Orlando Padilla
+With just about one file format bug being consistently released on a weekly basis over the past six to twelve months, one can only hope developers would look and learn. The reality of it all is unfortunate; no one cares enough. These bugs have been around for some time now, but have only recently gained media attention due to the large number of vulnerabilities being released. Researchers have been finding more elaborate and passive attack vectors for these bugs, some of which can even leverage a remote compromise.
+pdf | txt | code.tgz | html
+
+General Research
+Attacking NTLM with Precomputed Hashtables
+Warlord
+Breaking encrypted passwords has been of interest to hackers for a long time, and protecting them has always been one of the biggest security problems operating systems have faced, with Microsoft's Windows being no exception. Due to errors in the design of the password encryption scheme, especially in the LanMan(LM) scheme, Windows has a bad track in this field of information security. Especially in the last couple of years, where the outdated DES encryption algorithm that LanMan is based on faced more and more processing power in the average household, combined with ever increasing harddisk size, made it crystal clear that LanMan nowadays is not just outdated, but even antiquated.
+pdf | txt | html
+
+Linux Improvised Userland Scheduler Virus
+Izik
+This paper discusses the combination of a userland scheduler and runtime process infection for a virus. These two concepts complete each other. The runtime process infection opens the door to invading into other processes, and the userland scheduler provides a way to make the injected code coexist with the original process code. This allows the virus to remain stealthy and active inside an infected process.
+pdf | txt | html
+
+Rootkit Technology
+FUTo
+Peter Silberman & C.H.A.O.S.
+Since the introduction of FU, the rootkit world has moved away from implementing system hooks to hide their presence. Because of this change in offense, a new defense had to be developed. The new algorithms used by rootkit detectors, such as BlackLight, attempt to find what the rootkit is hiding instead of simply detecting the presence of the rootkit's hooks. This paper will discuss an algorithm that is used by both Blacklight and IceSword to detect hidden processes. This paper will also document current weaknesses in the rootkit detection field and introduce a more complete stealth technique implemented as a prototype in FUTo.
+pdf | txt | code.tgz | html
+

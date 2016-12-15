@@ -1,0 +1,43 @@
+    
+
+Engineering in Reverse
+Introduction to Reverse Engineering Win32 Applications
+trew
+During the course of this paper the reader will be (re)introduced to many concepts and tools essential to understanding and controlling native Win32 applications through the eyes of Windows Debugger (WinDBG). Throughout, WinMine will be utilized as a vehicle to deliver and demonstrate the functionality provided by WinDBG and how this functionality can be harnessed to aid the reader in reverse engineering native Win32 applications. Topics covered include an introductory look at IA-32 assembly, register significance, memory protection, stack usage, various WinDBG commands, call stacks, endianness, and portions of the Windows API. Knowledge gleaned will be used to develop an application designed to reveal and/or remove bombs from the WinMine playing grid.
+code.tgz | pdf | html | txt
+
+Exploitation Technology
+Post-Exploitation on Windows using ActiveX Controls
+skape
+When exploiting software vulnerabilities it is sometimes impossible to build direct communication channels between a target machine and an attacker's machine due to restrictive outbound filters that may be in place on the target machine's network. Bypassing these filters involves creating a post-exploitation payload that is capable of masquerading as normal user traffic from within the context of a trusted process. One method of accomplishing this is to create a payload that enables ActiveX controls by modifying Internet Explorer's zone restrictions. With ActiveX controls enabled, the payload can then launch a hidden instance of Internet Explorer that is pointed at a URL with an embedded ActiveX control. The end result is the ability for an attacker to run custom code in the form of a DLL on a target machine by using a trusted process that uses one or more trusted communication protocols, such as HTTP or DNS.
+pdf | html | txt
+
+General Research
+Smart Parking Meters
+h1kari
+Security through obscurity is unfortunately much more common than people think: many interfaces are built on the premise that since they are a "closed system" they can ignore standard security practices. This paper will demonstrate how parking meter smart cards implement their protocol and will point out some weaknesses in their design that open the doors to the system. It will also present schematics and code that you can use to perform these basic techniques for auditing almost any type of blackblox secure memory card.
+html | txt
+
+General Security
+Loop Detection
+Peter Silberman
+During the course of this paper the reader will gain new knowledge about previous and new research on the subject of loop detection. The topic of loop detection will be applied to the field of binary analysis and a case study will be given to illustrate its uses. All of the implementations provided in this document have been written in C/C++ using Interactive Disassembler (IDA) plug-ins.
+code.tgz | pdf | html | txt
+
+Social Zombies: Aspects of Trojan Networks
+warlord
+Malicious code is so common in today's Internet that it seems impossible for an average user to keep his or her system clean. It's estimated that several hundred thousand machines are infected by trojans to be abused in a variety of ways, including the theft of money and confidential data as well as extortion, spam, and a whole plethora of further ways. Most often the infected hosts are linked into simple botnets to provide an easy way for the botnet manager to command his zombie army. This article describes ways to form far more effective networks than the ones in use today by the means of stealth, deception, and cryptography.
+pdf | html | txt
+
+Machine Speak
+Mac OS X PPC Shellcode Tricks
+H D Moore
+Developing shellcode for Mac OS X is not particularly difficult, but there are a number of tips and techniques that can make the process easier and more effective. The independent data and instruction caches of the PowerPC processor can cause a variety of problems with exploit and shellcode development. The common practice of patching opcodes at run-time is much more involved when the instruction cache is in incoherent mode. NULL-free shellcode can be improved by taking advantage of index registers and the reserved bits found in many opcodes, saving space otherwise taken by standard NULL evasion techniques. The Mac OS X operating system introduces a few challenges to unsuspecting developers; system calls change their return address based on whether they succeed and oddities in the Darwin kernel can prevent standard execve() shellcode from working properly with a threaded process. The virtual memory layout on Mac OS X can be abused to overcome instruction cache obstacles and develop even smaller shellcode.
+pdf | html | txt
+
+What Were They Thinking?
+Annoyances Caused by Unsafe Assumptions
+skape
+This installation of What Were They Thinking illustrates some of the annoyances that can be caused when developing software that has to inter-operate with third-party applications. Two such cases will be dissected and discussed in detail for the purpose of showing how third-party applications can fail when used in conjunction with software that performs certain tasks. The analysis of the two cases is meant to show how complex failure conditions can be analyzed and used to determine inter-operability problems.
+pdf | html | txt
+
