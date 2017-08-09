@@ -1,2 +1,0 @@
-# htp 
-Hack The Planet
